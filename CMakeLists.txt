@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(libs)
 
-add_executable(rest-api libs/main.cpp)
+add_executable(rest-api main.cpp)
 
 target_link_libraries(rest-api PRIVATE
         connman_handler

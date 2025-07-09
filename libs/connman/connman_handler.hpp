@@ -1,64 +1,33 @@
 //
-// Created by sheyme on 07/07/25.
+// Created by sheyme on 09/07/25.
 //
 
 #pragma once
 
-#include <iostream>
-#include <sstream>
-#include <algorithm>
-#include <thread>
-#include <utility>
-#include <memory>
-#include <string>
-#include <vector>
 #include <regex>
 
-class ConnmanHandler {
+#include "utils.hpp"
+
+class ConnmanHandler : public InterfaceHandler {
  public:
-  struct IpConfig {
-    [[nodiscard]] inline bool ValidateConfig() const {
-      if (interface.empty()) {
-        return false;
-      }
-      if (is_dhcp) {
-        return true;
-      }
-      return !ip.empty() && !netmask.empty() && !gateway.empty();
-    }
-
-    friend std::ostream& operator<<(std::ostream& ostream,
-        const IpConfig& config);
-
-    std::string interface;
-    std::string ip;
-    std::string netmask;
-    std::string gateway;
-    bool is_dhcp{false};
-  };
-
   ConnmanHandler() = default;
 
-  [[nodiscard]] IpConfig GetConfiguration(const std::string& profile);
+  void ApplyConfiguration(const NetConfig& config) override;
 
-  void SetConfiguration(const IpConfig& config);
-
-  ~ConnmanHandler() = default;
-
- private:
-  [[nodiscard]] inline static bool IsConnmanAvailable() {
-    return system("which connmanctl > /dev/null 2>&1") == 0;
+  inline void StartService() override {
+    Execute("systemctl start connman");
   }
 
-  std::string GetServiceName();
+  inline void StopService() override {
+    Execute("systemctl stop connman");
+  }
 
-  void DisconnectFromService();
-  void ConnectToService();
-  void ApplyConfig();
+  [[nodiscard]] inline bool IsServiceActive() const override {
+    std::string output;
+    Execute("systemctl is-active connman", &output);
+    return output == "active";
+  }
 
-  static std::string ExecuteCommand(const std::string& command);
-  static std::vector<std::string> ExecuteLines(const std::string& command);
-
-  inline static constexpr size_t kBufferSize = 4096;
-  std::string cached_service_name_;
+ private:
+  static std::string GetServiceName(const std::string& interface);
 };
