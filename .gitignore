@@ -1,0 +1,8 @@
+.idea
+
+cmake-build-debug
+libs/cmake-build-debug
+libs/connman/cmake-build-debug
+libs/rest-api/cmake-build-debug
+
+rofl
