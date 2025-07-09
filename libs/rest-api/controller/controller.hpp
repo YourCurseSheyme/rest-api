@@ -7,11 +7,9 @@
 #include <optional>
 #include <memory>
 
-#include <oatpp/web/server/HttpRouter.hpp>
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/web/mime/ContentMappers.hpp"
 #include "oatpp/macro/codegen.hpp"
-#include "oatpp/macro/component.hpp"
 
 #include "connman_handler.hpp"
 
@@ -22,8 +20,9 @@
 class ConnmanController : public oatpp::web::server::api::ApiController,
     std::enable_shared_from_this<ConnmanController> {
  public:
-  inline static std::shared_ptr<ConnmanController> createShared(
-      std::shared_ptr<oatpp::web::mime::ContentMappers>& api_content_mappers) {
+  inline static std::shared_ptr<ConnmanController>
+  createShared(const std::shared_ptr<
+      oatpp::web::mime::ContentMappers>& api_content_mappers) {
     return std::make_shared<ConnmanController>(api_content_mappers);
   }
 
