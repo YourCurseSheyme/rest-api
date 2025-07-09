@@ -12,9 +12,6 @@ std::ostream& operator<<(std::ostream& ostream,
   return ostream;
 }
 
-ConnmanHandler::ConnmanHandler(const std::string& interface)
-    : interface_(interface) {}
-
 std::string ConnmanHandler::ExecuteCommand(const std::string& command) {
   std::string result;
   result.reserve(kBufferSize);
@@ -54,9 +51,6 @@ std::string ConnmanHandler::GetServiceName() {
   std::regex service_regex(
       R"((wifi|ethernet)_[a-zA-Z0-9_]+(?:_managed_\w+)?)");
   for (const auto& line : lines) {
-    if (line.find(interface_) == std::string::npos) {
-      continue;
-    }
     std::smatch match;
     if (std::regex_search(line, match, service_regex)) {
       std::string service = match[0].str();

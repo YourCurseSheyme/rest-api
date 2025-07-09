@@ -8,6 +8,7 @@
 #include <sstream>
 #include <algorithm>
 #include <thread>
+#include <utility>
 #include <memory>
 #include <string>
 #include <vector>
@@ -37,8 +38,6 @@ class ConnmanHandler {
   };
 
   ConnmanHandler() = default;
-
-  explicit ConnmanHandler(const std::string& interface);
 
   [[nodiscard]] inline std::string GetInterface() const {
     return interface_;

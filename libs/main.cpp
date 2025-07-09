@@ -22,7 +22,7 @@ const IpConfig original_config = {
 };
 
 void ConnmanTest() {
-  ConnmanHandler handler(kInterface);
+  ConnmanHandler handler;
   const IpConfig test_config = {
       kInterface,
       "192.168.30.36",
@@ -40,10 +40,10 @@ void ConnmanTest() {
   try {
     std::cout << handler.GetConfiguration(kProfile) << '\n';
     std::cout << "+-------------------------\n";
-    handler.SetConfiguration(dhcp_config);
+    handler.SetConfiguration(test_config);
     std::cout << handler.GetConfiguration(kProfile) << '\n';
     std::cout << "+-------------------------\n";
-//    handler.SetConfiguration(original_config);
+    handler.SetConfiguration(original_config);
     std::cout << handler.GetConfiguration(kProfile) << '\n';
     std::cout << "+-------------------------\n";
   } catch (const std::exception& exception) {
