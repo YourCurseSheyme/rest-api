@@ -14,7 +14,7 @@ class ConnmanHandler : public InterfaceHandler {
 
   void ApplyConfiguration(const NetConfig& config) override;
 
-  inline void StartService() override {
+  inline void StartService(std::string_view interface = "") override {
     Execute("systemctl start connman");
   }
 
@@ -28,6 +28,8 @@ class ConnmanHandler : public InterfaceHandler {
     return output == "active";
   }
 
+  bool IsDhcpEnabled();
+
  private:
-  static std::string GetServiceName(const std::string& interface);
+  static std::string GetServiceName();
 };

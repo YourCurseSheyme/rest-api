@@ -90,14 +90,24 @@ class InterfaceHandler : public CommandExecutor {
     }
     Execute("ip route | awk '/default/ && /" + profile + "/ {print $3}'",
             &actual_state.gateway);
+    actual_state.gateway = ExtractLine(actual_state.gateway);
     return actual_state;
   }
 
-  virtual void StartService() = 0;
+  virtual void StartService(std::string_view interface = "") = 0;
 
   virtual void StopService() = 0;
 
   [[nodiscard]] virtual bool IsServiceActive() const = 0;
 
   virtual ~InterfaceHandler() = default;
+
+ private:
+  static inline std::string ExtractLine(std::string_view string) {
+    size_t separator = string.find('\n');
+    if (separator == std::string_view::npos) {
+      return std::string(string);
+    }
+    return std::string(string.substr(0, separator));
+  }
 };

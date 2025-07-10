@@ -2,9 +2,10 @@
 // Created by sheyme on 09/07/25.
 //
 
+#include <iostream>
 #include "connman_handler.hpp"
 
-std::string ConnmanHandler::GetServiceName(const std::string& interface) {
+std::string ConnmanHandler::GetServiceName() {
   const auto& lines = HandleLines("connmanctl services");
   std::regex service_regex(
       R"((wifi|ethernet)_[a-zA-Z0-9_]+(?:_managed_\w+)?)");
@@ -12,32 +13,52 @@ std::string ConnmanHandler::GetServiceName(const std::string& interface) {
     std::smatch match;
     if (std::regex_search(line, match, service_regex)) {
       std::string service = match[0].str();
-      if (service.find(interface) != std::string::npos) {
-        return service;
-      }
+      return match[0].str();
     }
   }
   return "";
 }
 
 void ConnmanHandler::ApplyConfiguration(const NetConfig& config) {
+  if (!IsServiceActive()) {
+    throw std::runtime_error("Connman isn't available");
+  }
+  const std::string& interface = config.interface;
   const auto* ip_config = dynamic_cast<const IpConfig*>(&config);
-  if (!ip_config) {
-    throw std::invalid_argument("Invalid config type");
-  }
-  if (!ip_config->ValidateConfig()) {
-    throw std::invalid_argument("Invalid ip config");
-  }
-  const auto& service = GetServiceName(config.interface);
+  const std::string& service = GetServiceName();
   if (service.empty()) {
+    std::cerr << config.interface << ": " << service;
     throw std::runtime_error("Incorrect interface");
   }
   std::string command = "connmanctl config " + service;
-  command += " --ipv4 manual " + ip_config->ip + " " + ip_config->netmask
-      + " " + ip_config->gateway;
+  if (ip_config == nullptr) {
+    command += " --ipv4 dhcp";
+  } else {
+    if (!ip_config->ValidateConfig()) {
+      throw std::runtime_error("Invalid ip config");
+    }
+    command += " --ipv4 manual " + ip_config->ip + " " + ip_config->netmask
+        + " " + ip_config->gateway;
+  }
+  Execute(command);
+}
+
+bool ConnmanHandler::IsDhcpEnabled() {
+  const auto& service = GetServiceName();
+  if (service.empty()) {
+    throw std::runtime_error("Interface not found in connman services");
+  }
+  std::string command = "connmanctl services " + service;
   std::string output;
   Execute(command, &output);
-  if (output.find("error") != std::string::npos) {
-    throw std::runtime_error("Error while configuring interface");
+  std::istringstream iss(output);
+  std::string line;
+  while (std::getline(iss, line)) {
+    if (line.find("IPv4") != std::string::npos &&
+        line.find("Method") != std::string::npos &&
+        line.find("dhcp") != std::string::npos) {
+      return true;
+    }
   }
+  return false;
 }
