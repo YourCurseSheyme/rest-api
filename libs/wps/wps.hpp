@@ -18,9 +18,12 @@ class WpsHandler : public InterfaceHandler {
   }
 
   inline void StartService(std::string_view interface = "") override {
-    std::string prompt = "wpa_supplicant -i ";
+//    std::string prompt = "wpa_supplicant -i ";
+//    prompt += interface;
+//    prompt += " -D wired -c /etc/wpa_supplicant.conf";
+    std::string prompt = "wpa_supplicant -B -i ";
     prompt += interface;
-    prompt += " -D wired -c /etc/wpa_supplicant.conf";
+    prompt += " -c /etc/wpa_supplicant.conf";
     Execute(prompt);
   }
 

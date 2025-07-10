@@ -2,7 +2,6 @@
 // Created by sheyme on 09/07/25.
 //
 
-#include <iostream>
 #include "connman_handler.hpp"
 
 std::string ConnmanHandler::GetServiceName() {
@@ -12,7 +11,6 @@ std::string ConnmanHandler::GetServiceName() {
   for (const auto& line : lines) {
     std::smatch match;
     if (std::regex_search(line, match, service_regex)) {
-      std::string service = match[0].str();
       return match[0].str();
     }
   }
@@ -23,11 +21,9 @@ void ConnmanHandler::ApplyConfiguration(const NetConfig& config) {
   if (!IsServiceActive()) {
     throw std::runtime_error("Connman isn't available");
   }
-  const std::string& interface = config.interface;
   const auto* ip_config = dynamic_cast<const IpConfig*>(&config);
   const std::string& service = GetServiceName();
   if (service.empty()) {
-    std::cerr << config.interface << ": " << service;
     throw std::runtime_error("Incorrect interface");
   }
   std::string command = "connmanctl config " + service;

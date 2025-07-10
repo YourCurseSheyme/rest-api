@@ -15,7 +15,7 @@ class ConnmanHandler : public InterfaceHandler {
   void ApplyConfiguration(const NetConfig& config) override;
 
   inline void StartService(std::string_view interface = "") override {
-    Execute("systemctl start connman");
+    Execute("systemctl restart connman");
   }
 
   inline void StopService() override {

@@ -69,7 +69,7 @@ class ConnmanController : public oatpp::web::server::api::ApiController,
       response->ip = config.ip;
       response->netmask = config.netmask;
       response->gateway = config.gateway;
-      response->is_dhcp = is_dhcp_;
+      response->is_dhcp = connman_->IsDhcpEnabled();
       return createDtoResponse(Status::CODE_200, std::move(response));
     } catch (const std::runtime_error& exception) {
       auto error = ErrorDTO::createShared();

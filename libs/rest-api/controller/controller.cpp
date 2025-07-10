@@ -33,21 +33,21 @@ ConnmanController::ApplyStatic(const oatpp::Object<
 std::optional<std::string>
 ConnmanController::TryApply(const NetConfig& config) {
   try {
-    if (is_dhcp_) {
-//      if (connman_->IsServiceActive()) {
-//        connman_->StopService();
-//      }
-//      wps_->StartService();
-//      connman_->StartService();
+    if (is_dhcp_) { /*
+      if (connman_->IsServiceActive()) {
+        connman_->StopService();
+      }
+      wps_->ApplyConfiguration(config);
+      connman_->StartService(); */
       connman_->ApplyConfiguration(config);
       return std::nullopt;
+    } /*
+    if (wps_->IsServiceActive()) {
+        wps_->StopService();
     }
-//    if (wps_->IsServiceActive()) {
-//      wps_->StopService();
-//    }
-//    if (!connman_->IsServiceActive()) {
-//      connman_->StartService();
-//    }
+    if (!connman_->IsServiceActive()) {
+      connman_->StartService();
+    } */
     connman_->ApplyConfiguration(config);
     return std::nullopt;
   } catch (const std::runtime_error& exception) {
